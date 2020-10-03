@@ -1,5 +1,8 @@
 module Hardware where
 
+-- Laurens Kubat
+-- s4626249
+
 data Bit = O | I
   deriving (Eq, Ord, Show)
 

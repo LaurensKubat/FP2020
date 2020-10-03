@@ -1,5 +1,8 @@
 module Unfold where
 
+-- Laurens Kubat
+-- s4626249
+
 import Prelude hiding (take,zip,(++))
 
 -- take :: Int -> [a] -> [a]

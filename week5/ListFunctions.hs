@@ -22,8 +22,12 @@ member e xs = foldr (\x acc -> if x == e then True else False) False xs
 smallest :: [Int] -> Int
 -- since we want to find the smallest the most logical starting value is the first item of the list
 smallest xs = foldl1 (\acc x -> if x < acc then x else acc) xs
+-- only using foldl would look like this, where we use the result of maxBound Int as the starting value
+-- smallest xs = foldl (\acc x -> if x < acc then x else acc) 9223372036854775807 xs
 
 largest :: [Int] -> Int
--- here we also 
+-- here we also use foldr1
 largest xs = foldr1 (\x acc -> if x > acc then x else acc) xs
+-- using foldr, we would do something similar to smallest, using the result minBound Int
+-- largest xs = foldr (\x acc -> if x > acc then x else acc) (-9223372036854775807) xs
 
