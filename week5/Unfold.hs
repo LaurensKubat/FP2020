@@ -1,11 +1,13 @@
 module Unfold where
 
+import Data.List
 -- Laurens Kubat
 -- s4626249
 
 import Prelude hiding (take,zip,(++))
 
--- take :: Int -> [a] -> [a]
+take :: Int -> [a] -> [a]
+take n xs = unfoldr (\n -> if n == 0 then Nothing else Just x) n
 -- zip :: [a] -> [b] -> [(a,b)]
 -- fibs :: [Integer]
 -- primes :: [Integer]

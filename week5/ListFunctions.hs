@@ -11,9 +11,9 @@ allTrue :: [Bool] -> Bool
 allTrue xs = foldr1 (\x acc -> x && acc) xs
 
 allFalse :: [Bool] -> Bool
--- allFalse xs = foldl (\acc x -> acc && x) False xs
--- This one also makes more sense to do using foldl1 (or foldr1)
-allFalse xs = foldl1 (\acc x -> acc && x) xs
+-- allFalse xs = foldl (\acc x -> acc && x) True xs
+-- This one also makes more sense to do using foldl1 (or foldr1), the not is needed since we want to return true if all are false
+allFalse xs = not $ foldl1 (\acc x -> acc || x) xs
 
 
 member :: (Eq a) => a -> [a] -> Bool
