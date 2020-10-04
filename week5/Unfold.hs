@@ -75,8 +75,11 @@ unfoldrApo f t = apo (\t -> case x of
 
 
 insert :: (Ord a) => a -> [a] -> [a]
-insert x ys = unfoldrApo ((x, ys) -> case ys of
+insert x ys = unfoldrApo (\(x, ys) -> case ys of
   [] -> Nothing
-  y:z:ys -> if y < x < z then Just (x, (x, z:xs)) else Just (y, (x, z:xs))
+  y:z:ys -> if y < x && x < z then 
+    Just (x, (x, (z:ys)))
+  else
+     Just (y, (x, (z:ys)))
   ) (x, ys)
 
