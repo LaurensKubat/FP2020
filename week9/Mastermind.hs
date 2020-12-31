@@ -1,13 +1,12 @@
-module Mastermind where
-
+module Main where
 import System.Random
 
 data Colour = White | Silver | Green | Red | Orange | Pink | Yellow | Blue
   deriving (Show, Eq)
 type Code = [Colour]
 
-getRandomColour :: Colour
-getRandomColour
+getColour :: Int -> Colour
+getColour r
   | r == 1 = White
   | r == 2 = Silver
   | r == 3 = Green
@@ -16,10 +15,10 @@ getRandomColour
   | r == 6 = Pink
   | r == 7 = Yellow
   | r == 8 = Blue
-    where r = randomRIO (1,8)
 
-getCode :: Code
-getCode = [getRandomColour, getRandomColour, getRandomColour, getRandomColour]
+getCode :: Int -> [Int] -> Code
+getCode 1 (x:[]) = [getColour x]
+getCode x (y:xs)= [getColour y] ++ getCode (x-1) xs
 
 parseGuess :: [String] -> Code
 parseGuess [] = []
@@ -36,6 +35,7 @@ parseGuess (x:xs)
 -- Correctness shows the correctness of a pin, correct is both correct spot and colour
 -- Spot means that only the spot in wrong
 data Correctness = Correct | Spot | Wrong
+  deriving Eq
 
 (&&&) :: Correctness -> Correctness -> Correctness
 x &&& y
@@ -56,6 +56,7 @@ checkCode [] _ _ = []
 checkCode (x:xs) i ys = (checkPosition x i ys) : (checkCode xs (i+1) ys)
 
 checkVictory :: [Correctness] -> Bool
+checkVictory [] = True
 checkVictory (x:xs)
   | x == Correct = True && checkVictory xs
   | otherwise = False
@@ -78,35 +79,37 @@ tellTries :: Int -> IO ()
 tellTries i = do
   putStrLn (show i ++ " tries left\n")
 
-getGuess :: Code
-getGuess = do
-  guess <- getLine
-  return $ parseGuess $ words guess
+getGuess :: IO Code
+getGuess = do parseGuess . words <$> getLine
 
-gameLoop :: Code -> Int -> IO Bool
+gameLoop :: Code -> Int -> IO ()
 gameLoop code tries = do
     putStrLn (show tries ++ " tries left\n")
-    let g = getGuess
+    g <- getGuess
     let c = checkCode g 0 code
-    won <- checkVictory c
-    if (not won && (tries > 0))
-      then
-        giveHint c
+    -- TODO give a hint if the code is false.
+    let won = checkVictory c
+    if (won) 
+      then 
+        putStrLn "You won!"
       else
-        return won
-    return $ gameLoop code (tries - 1)
-
+        if (not won && (tries <= 0))
+          then
+            putStrLn "You Lost!"
+          else
+            giveHint c;
+            gameLoop code (tries - 1);
 
 main :: IO ()
 main = do
-  let code = getCode
+  a <- getStdRandom $ randomR (1, 8);
+  b <- getStdRandom $ randomR (1, 8);
+  c <- getStdRandom $ randomR (1, 8);
+  d <- getStdRandom $ randomR (1, 8);
+  let code = getCode 4 [a, b, c, d]
   putStrLn "I picked a random code word with 4 colours.\nPossible colours are White Silver Green Red Orange Pink Yellow Blue.\nTry to guess the secret code word,"
-  let won = gameLoop code 12
-  if (won)
-    then
-      putStrLn "Correct\n"
-    else
-      putStrLn ("No more tries, game over!\nThe code was " ++ show code)
+  putStrLn "Guess have to be entered as the following example: White White Red White"
+  gameLoop code 12
   putStrLn "Goodbye"
 
   

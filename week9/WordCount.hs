@@ -3,6 +3,7 @@ module Main where
 
 import System.Environment
 import System.IO as IO
+import System.FilePath
 
 countNewLines :: String -> Int
 countNewLines [] = 0

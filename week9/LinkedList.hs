@@ -16,10 +16,30 @@ cons e  l = newIORef $ Cons e l
 
 fromList :: [elem] -> IO (ListRef elem)
 fromList [] = nil
-fromList (x:xs) = cons x $ fromList xs
+fromList (x:xs) = do
+    ref <- fromList xs
+    cons x ref
 
 toList :: ListRef elem -> IO [elem]
-toList x = error "toList: not yet implemented"
+toList x = do 
+    zs <- readIORef x
+    toList' zs
+
+toList' :: List elem -> IO [elem]
+toList' Nil = return []
+toList' (Cons x xs) = do
+    ys <- readIORef xs
+    zs <- toList' ys
+    return $ x : zs
 
 foreach :: ListRef a -> (a -> IO b) -> IO (ListRef b)
-foreach = error "foreach: not yet implemented"
+foreach xs f = do
+    ys <- readIORef xs
+    foreach' ys f
+
+foreach' :: List a -> (a -> IO b) -> IO (ListRef b)
+foreach' Nil _ = nil
+foreach' (Cons x xs) f = do
+    y <- f x
+    ys <- foreach xs f
+    cons y ys
